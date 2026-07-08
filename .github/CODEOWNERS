@@ -1,0 +1,9 @@
+# Default owners for everything in this repo.
+# Replace with the appropriate GitHub team / users before enabling reviews.
+* @OWNER
+
+# Area owners (examples — adjust to your team structure):
+/lib/state/        @OWNER
+/lib/features/     @OWNER
+/qa/               @OWNER
+/.github/          @OWNER

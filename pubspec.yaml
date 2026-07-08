@@ -1,0 +1,38 @@
+name: bayaan
+description: "Bayaan - AI assistant for Abu Dhabi official statistics (front-end)."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  cupertino_icons: ^1.0.8
+  flutter:
+    sdk: flutter
+  # Vector brand mark rendering
+  flutter_svg: ^2.3.0
+  # Typography (Geist / Geist Mono)
+  google_fonts: ^8.1.0
+  # Lucide (feather-style) stroke icons used across the design
+  lucide_icons: ^0.257.0
+  # State management
+  provider: ^6.1.5+1
+
+dev_dependencies:
+  # Deterministic control of timers/microtasks in state-machine tests
+  fake_async: ^1.3.3
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  # Strict, opinionated lint ruleset for a team-ready codebase
+  very_good_analysis: ^10.3.0
+
+flutter:
+  uses-material-design: true
+
+  # The brand mark is drawn as an inline vector (see core/widgets/bayaan_logo.dart)
+  # and typography is served at runtime via google_fonts, so no bundled assets
+  # are required yet. To bundle licensed Geist font files instead, drop them in
+  # assets/fonts/ and declare the families here.
