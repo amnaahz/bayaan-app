@@ -9,9 +9,10 @@ phone, gather user feedback, and later wire it to a real backend.
 > is interactive — there are no dead ends — so testers get a realistic feel of
 > the product before any backend exists.
 
-<!-- Badges: replace OWNER/REPO once the repo is pushed to GitHub. -->
-[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
-[![Deploy](https://github.com/OWNER/REPO/actions/workflows/deploy.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/deploy.yml)
+**▶ Live demo: <https://amnaahz.github.io/bayaan-app/>** — open it on your phone.
+
+[![CI](https://github.com/amnaahz/bayaan-app/actions/workflows/ci.yml/badge.svg)](https://github.com/amnaahz/bayaan-app/actions/workflows/ci.yml)
+[![Deploy](https://github.com/amnaahz/bayaan-app/actions/workflows/deploy.yml/badge.svg)](https://github.com/amnaahz/bayaan-app/actions/workflows/deploy.yml)
 
 ---
 
