@@ -81,39 +81,47 @@ class _FrameContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = context.watch<AppState>();
 
-    return Stack(
-      children: [
-        // Base screen: header + active view + composer.
-        Positioned.fill(
-          child: Column(
-            children: [
-              const AppHeader(),
-              Expanded(child: _ScreenSwitcher(view: s.view)),
-              if (s.showComposer) const Composer(),
-            ],
+    // Force the stack to fill the available space. Without this, the only
+    // non-positioned child (the toast) drives the stack's size; when it's empty
+    // and the incoming constraints are loose (as in the full-screen mobile
+    // branch), the stack — and therefore every Positioned.fill child —
+    // collapses to zero and nothing renders.
+    return SizedBox.expand(
+      child: Stack(
+        children: [
+          // Base screen: header + active view + composer.
+          Positioned.fill(
+            child: Column(
+              children: [
+                const AppHeader(),
+                Expanded(child: _ScreenSwitcher(view: s.view)),
+                if (s.showComposer) const Composer(),
+              ],
+            ),
           ),
-        ),
 
-        // Composer popovers.
-        if (s.attachMenuOpen) const Positioned.fill(child: AttachMenu()),
-        if (s.modeMenuOpen) const Positioned.fill(child: ModeMenu()),
+          // Composer popovers.
+          if (s.attachMenuOpen) const Positioned.fill(child: AttachMenu()),
+          if (s.modeMenuOpen) const Positioned.fill(child: ModeMenu()),
 
-        // Full-surface feature overlays (mutually exclusive in practice).
-        if (s.reportOpen) const Positioned.fill(child: ArtifactReportViewer()),
-        if (s.nbOpen) const Positioned.fill(child: NotebookOverlay()),
-        if (s.drOpen) const Positioned.fill(child: DeepResearchOverlay()),
-        if (s.voiceOpen) const Positioned.fill(child: VoiceOverlay()),
+          // Full-surface feature overlays (mutually exclusive in practice).
+          if (s.reportOpen)
+            const Positioned.fill(child: ArtifactReportViewer()),
+          if (s.nbOpen) const Positioned.fill(child: NotebookOverlay()),
+          if (s.drOpen) const Positioned.fill(child: DeepResearchOverlay()),
+          if (s.voiceOpen) const Positioned.fill(child: VoiceOverlay()),
 
-        // Navigation drawer (kept mounted for slide animation).
-        const Positioned.fill(child: AppDrawer()),
+          // Navigation drawer (kept mounted for slide animation).
+          const Positioned.fill(child: AppDrawer()),
 
-        // Centered modals.
-        if (s.newFolderOpen) const Positioned.fill(child: NewFolderModal()),
-        if (s.newNbOpen) const Positioned.fill(child: NewNotebookModal()),
+          // Centered modals.
+          if (s.newFolderOpen) const Positioned.fill(child: NewFolderModal()),
+          if (s.newNbOpen) const Positioned.fill(child: NewNotebookModal()),
 
-        // Toast (self-positioned, top of frame).
-        const AppToast(),
-      ],
+          // Toast (self-positioned, top of frame).
+          const AppToast(),
+        ],
+      ),
     );
   }
 }

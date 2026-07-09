@@ -27,6 +27,30 @@ void main() {
     await tester.pumpWidget(const SizedBox()); // dispose timers
   });
 
+  testWidgets('fills the screen on a phone-sized (narrow) viewport', (
+    tester,
+  ) async {
+    // Regression test: on narrow viewports AppShell uses its full-screen
+    // (non-framed) branch. The content stack must fill the screen instead of
+    // collapsing to the size of the (empty) toast, which previously left the
+    // whole app blank on mobile.
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(_app());
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.byType(HomeView), findsOneWidget);
+    final size = tester.getSize(find.byType(HomeView));
+    expect(size.width, 390);
+    // Between the header and composer; the key point is it is not collapsed
+    // (pre-fix this was ~0 and the app rendered blank on mobile).
+    expect(size.height, greaterThan(400));
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets('opening the drawer reveals navigation', (tester) async {
     await tester.pumpWidget(_app());
     await tester.pump(const Duration(milliseconds: 300));
