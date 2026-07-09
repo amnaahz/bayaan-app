@@ -345,32 +345,36 @@ class _SourcesRow extends StatelessWidget {
     return FadeSlideIn(
       offset: 8,
       delay: const Duration(milliseconds: 180),
-      child: Row(
-        children: [
-          _avatar('S', BayaanBrand.blue, c),
-          Transform.translate(
-            offset: const Offset(-6, 0),
-            child: _avatar('H', BayaanBrand.purple, c),
-          ),
-          const SizedBox(width: 1),
-          Expanded(
-            child: Text(
-              sources,
-              style: TextStyle(fontSize: 12, color: c.secondary2),
+      child: InkWell(
+        onTap: context.read<AppState>().openSources,
+        borderRadius: BorderRadius.circular(10),
+        child: Row(
+          children: [
+            _avatar('S', BayaanBrand.blue, c),
+            Transform.translate(
+              offset: const Offset(-6, 0),
+              child: _avatar('H', BayaanBrand.purple, c),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(99),
-              border: Border.all(color: c.border),
+            const SizedBox(width: 1),
+            Expanded(
+              child: Text(
+                sources,
+                style: TextStyle(fontSize: 12, color: c.secondary2),
+              ),
             ),
-            child: Text(
-              'verified',
-              style: AppTheme.mono(color: c.muted, fontSize: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(99),
+                border: Border.all(color: c.border),
+              ),
+              child: Text(
+                'verified',
+                style: AppTheme.mono(color: c.muted, fontSize: 10),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

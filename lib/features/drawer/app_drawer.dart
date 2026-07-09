@@ -1,4 +1,5 @@
 import 'package:bayaan/core/icons/lucide_icons.dart';
+import 'package:bayaan/core/theme/app_theme.dart';
 import 'package:bayaan/core/theme/bayaan_colors.dart';
 import 'package:bayaan/core/theme/theme_x.dart';
 import 'package:bayaan/core/widgets/bayaan_logo.dart';
@@ -167,6 +168,14 @@ class _Panel extends StatelessWidget {
           _foldersNav(context, c),
           _navRow(
             c,
+            LucideIcons.sparkles,
+            'Agents',
+            active: s.isAgentsNav,
+            onTap: s.goAgents,
+            badge: 'GPT',
+          ),
+          _navRow(
+            c,
             LucideIcons.layoutGrid,
             'Spaces',
             active: s.isSpacesNav,
@@ -190,6 +199,7 @@ class _Panel extends StatelessWidget {
     String label, {
     required bool active,
     required VoidCallback onTap,
+    String? badge,
   }) {
     return InkWell(
       onTap: onTap,
@@ -204,14 +214,33 @@ class _Panel extends StatelessWidget {
           children: [
             Icon(icon, size: 18, color: active ? c.ink : c.secondary),
             const SizedBox(width: 12),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: active ? FontWeight.w600 : FontWeight.w400,
-                color: active ? c.ink : c.secondary,
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: active ? FontWeight.w600 : FontWeight.w400,
+                  color: active ? c.ink : c.secondary,
+                ),
               ),
             ),
+            if (badge != null)
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 7),
+                decoration: BoxDecoration(
+                  color: c.blueTint,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  badge,
+                  style: AppTheme.mono(
+                    color: c.link,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
           ],
         ),
       ),

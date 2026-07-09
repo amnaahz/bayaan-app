@@ -23,8 +23,18 @@ class AttachMenu extends StatelessWidget {
         duration: const Duration(milliseconds: 160),
         child: _card(
           c,
-          width: 186,
+          width: 208,
           children: [
+            _row(
+              c,
+              c.blueTint,
+              BayaanBrand.blue,
+              LucideIcons.sparkles,
+              'Pick an agent',
+              s.openAgentPicker,
+              trailingChevron: true,
+            ),
+            _divider(c),
             _row(
               c,
               c.blueTint,
@@ -69,8 +79,9 @@ class AttachMenu extends StatelessWidget {
     Color fg,
     IconData icon,
     String label,
-    VoidCallback onTap,
-  ) {
+    VoidCallback onTap, {
+    bool trailingChevron = false,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),
@@ -89,19 +100,29 @@ class AttachMenu extends StatelessWidget {
               child: Icon(icon, size: 15, color: fg),
             ),
             const SizedBox(width: 10),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: c.textMax,
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: c.textMax,
+                ),
               ),
             ),
+            if (trailingChevron)
+              Icon(LucideIcons.chevronRight, size: 14, color: c.faint),
           ],
         ),
       ),
     );
   }
+
+  Widget _divider(BayaanColors c) => Container(
+    height: 1,
+    margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+    color: c.hairline,
+  );
 }
 
 /// Popover for search type (Normal / Web / Deep) and response mode.

@@ -1,5 +1,6 @@
 import 'package:bayaan/data/mock/mock_answers.dart';
 import 'package:bayaan/data/mock/mock_data.dart';
+import 'package:bayaan/data/models/agent_models.dart';
 import 'package:bayaan/data/models/answer_models.dart';
 import 'package:bayaan/data/models/chat_models.dart';
 import 'package:bayaan/data/models/space_models.dart';
@@ -25,6 +26,9 @@ abstract interface class BayaanRepository {
 
   /// Seed the notebooks shown in Spaces.
   Future<List<Notebook>> fetchNotebooks();
+
+  /// Seed the agents shown in the Agents section and slash picker.
+  Future<List<Agent>> fetchAgents();
 
   /// Sources for a given notebook.
   Future<List<NotebookSource>> fetchNotebookSources(String notebookName);
@@ -53,6 +57,9 @@ class MockBayaanRepository implements BayaanRepository {
 
   @override
   Future<List<Notebook>> fetchNotebooks() async => defaultNotebooks();
+
+  @override
+  Future<List<Agent>> fetchAgents() async => defaultAgents();
 
   @override
   Future<List<NotebookSource>> fetchNotebookSources(String notebookName) async {

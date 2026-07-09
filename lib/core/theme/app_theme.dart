@@ -1,13 +1,17 @@
 import 'package:bayaan/core/theme/bayaan_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Builds the light and dark [ThemeData] for Bayaan.
 ///
 /// Typography uses Geist (UI) with Geist Mono reserved for figures and
-/// micro-labels (accessed via [AppTheme.mono]). The full design token set is
-/// attached as a [BayaanColors] theme extension.
+/// micro-labels (accessed via [AppTheme.mono]). Both families are bundled with
+/// the app (see `pubspec.yaml`) so they render without a runtime network fetch.
+/// The full design token set is attached as a [BayaanColors] theme extension.
 abstract final class AppTheme {
+  /// Bundled font family names (must match the `fonts:` entries in pubspec).
+  static const String fontSans = 'Geist';
+  static const String fontMono = 'Geist Mono';
+
   static ThemeData dark() => _build(BayaanColors.dark, Brightness.dark);
   static ThemeData light() => _build(BayaanColors.light, Brightness.light);
 
@@ -19,7 +23,8 @@ abstract final class AppTheme {
     double? letterSpacing,
     double? height,
   }) {
-    return GoogleFonts.geistMono(
+    return TextStyle(
+      fontFamily: fontMono,
       color: color,
       fontSize: fontSize,
       fontWeight: fontWeight,
@@ -30,7 +35,8 @@ abstract final class AppTheme {
 
   static ThemeData _build(BayaanColors c, Brightness brightness) {
     final base = ThemeData(brightness: brightness, useMaterial3: true);
-    final textTheme = GoogleFonts.geistTextTheme(base.textTheme).apply(
+    final textTheme = base.textTheme.apply(
+      fontFamily: fontSans,
       bodyColor: c.body,
       displayColor: c.ink,
     );
@@ -39,6 +45,7 @@ abstract final class AppTheme {
       scaffoldBackgroundColor: c.bg,
       canvasColor: c.bg,
       textTheme: textTheme,
+      primaryTextTheme: textTheme,
       primaryColor: BayaanBrand.blue,
       colorScheme: base.colorScheme.copyWith(
         brightness: brightness,

@@ -313,6 +313,112 @@ void main() {
     });
   });
 
+  group('agents', () {
+    test('seeds featured and user agents', () {
+      withState((s, async) {
+        expect(s.agents, isNotEmpty);
+        expect(s.featuredAgents, isNotEmpty);
+        expect(s.myAgents, isNotEmpty);
+      });
+    });
+
+    test('navigating to agents sets the view', () {
+      withState((s, async) {
+        s.goAgents();
+        expect(s.view, AppView.agents);
+        expect(s.isAgentsNav, isTrue);
+        expect(s.sectionTitle, 'Agents');
+      });
+    });
+
+    test('opening a profile and starting a chat applies the agent', () {
+      withState((s, async) {
+        final agent = s.featuredAgents.first;
+        s.openAgent(agent);
+        expect(s.agentOpen, isTrue);
+        expect(s.activeAgent, agent);
+
+        s.startAgent();
+        expect(s.agentOpen, isFalse);
+        expect(s.attachedAgent, agent);
+        expect(s.view, AppView.home);
+      });
+    });
+
+    test('a profile starter asks with the agent applied', () {
+      withState((s, async) {
+        final agent = s.featuredAgents.first;
+        s.openAgent(agent);
+        s.startAgentWith(agent.starters.first);
+        async.flushMicrotasks();
+        expect(s.attachedAgent, agent);
+        expect(s.view, AppView.chat);
+      });
+    });
+
+    test('slash picker filters and applies an agent', () {
+      withState((s, async) {
+        s.handleSlashInput('/');
+        expect(s.slashOpen, isTrue);
+        expect(s.slashFiltered, isNotEmpty);
+
+        s.slashQuery = '/inflation';
+        final matches = s.slashFiltered;
+        expect(
+          matches.every(
+            (a) =>
+                a.tag.toLowerCase().contains('inflation') ||
+                a.name.toLowerCase().contains('inflation'),
+          ),
+          isTrue,
+        );
+
+        final pick = s.agents.first;
+        s.pickSlashAgent(pick);
+        expect(s.slashOpen, isFalse);
+        expect(s.attachedAgent, pick);
+      });
+    });
+
+    test('creating an agent appends a private agent', () {
+      withState((s, async) {
+        final before = s.agents.length;
+        s.openNewAgent();
+        s.onNaName('Fiscal Brief');
+        expect(s.newAgentValid, isTrue);
+        s.createAgent();
+        expect(s.agents.length, before + 1);
+        expect(s.agents.last.name, 'Fiscal Brief');
+        expect(s.agents.last.private, isTrue);
+        expect(s.view, AppView.agents);
+      });
+    });
+
+    test('generate persona fills instructions', () {
+      withState((s, async) {
+        s.openNewAgent();
+        s.onNaName('Explainer');
+        s.generatePersona();
+        expect(s.naGenerating, isTrue);
+        async.elapse(const Duration(seconds: 2));
+        expect(s.naGenerating, isFalse);
+        expect(s.naInstr, isNotEmpty);
+      });
+    });
+  });
+
+  group('sources panel', () {
+    test('open/close toggles state', () {
+      withState((s, async) {
+        expect(s.sourcesOpen, isFalse);
+        s.openSources();
+        expect(s.sourcesOpen, isTrue);
+        s.closeSources();
+        expect(s.sourcesOpen, isFalse);
+      });
+    });
+  });
+
   group('voice', () {
     test('starting and ending a voice session toggles the overlay', () {
       withState((s, async) {

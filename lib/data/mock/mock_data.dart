@@ -1,3 +1,4 @@
+import 'package:bayaan/data/models/agent_models.dart';
 import 'package:bayaan/data/models/chat_models.dart';
 import 'package:bayaan/data/models/research_models.dart';
 import 'package:bayaan/data/models/space_models.dart';
@@ -106,6 +107,142 @@ List<Notebook> defaultNotebooks() => const [
   ),
 ];
 
+// ── Agents ─────────────────────────────────────────────────────────────────
+
+/// Featured (SCAD-curated) agents followed by the user's own agents.
+List<Agent> defaultAgents() => const [
+  Agent(
+    id: 'gdp',
+    name: 'GDP Analyst',
+    initials: 'GD',
+    tone: AgentTone.blue,
+    tag: 'Growth, sectors and non-oil economy',
+    by: 'SCAD',
+    description:
+        'Explains Abu Dhabi output — headline and non-oil GDP, sector '
+        'contributions and quarterly momentum — grounded in the latest '
+        'national accounts releases.',
+    capabilities: ['National accounts', 'Sector breakdowns', 'Charts'],
+    starters: [
+      'What is the latest non-oil GDP growth?',
+      'Which sectors contributed most to growth?',
+      'How does Q1 compare to a year ago?',
+    ],
+    featured: true,
+  ),
+  Agent(
+    id: 'inflation',
+    name: 'Inflation Tracker',
+    initials: 'IN',
+    tone: AgentTone.purple,
+    tag: 'CPI, basket weights and cost of living',
+    by: 'SCAD',
+    description:
+        'Tracks consumer prices across the CPI basket, compares emirates and '
+        'flags divergences between headline inflation and specific groups '
+        'such as housing.',
+    capabilities: ['CPI basket', 'Emirate comparison', 'Trends'],
+    starters: [
+      'What is the current headline CPI?',
+      'Compare inflation across the Emirates.',
+      'Where are rents diverging from CPI?',
+    ],
+    featured: true,
+  ),
+  Agent(
+    id: 'population',
+    name: 'Population Insights',
+    initials: 'PO',
+    tone: AgentTone.green,
+    tag: 'Demographics, growth and distribution',
+    by: 'SCAD',
+    description:
+        'Answers demographic questions — population size, growth rates, and '
+        'breakdowns by age, gender and nationality — from census and '
+        'mid-year estimates.',
+    capabilities: ['Census', 'Growth rates', 'Breakdowns'],
+    starters: [
+      'How fast is the population growing?',
+      'What is the age structure of Abu Dhabi?',
+      'Show the Emirati / expat split.',
+    ],
+    featured: true,
+  ),
+  Agent(
+    id: 'trade',
+    name: 'Trade & Tourism',
+    initials: 'TT',
+    tone: AgentTone.amber,
+    tag: 'Non-oil trade, FDI and visitor economy',
+    by: 'SCAD',
+    description:
+        'Covers non-oil foreign trade, FDI flows and tourism performance — '
+        'visitor arrivals, hotel occupancy and revenue — with quarterly '
+        'context.',
+    capabilities: ['Foreign trade', 'FDI', 'Tourism'],
+    starters: [
+      'How did tourism revenue change last quarter?',
+      'What are the top non-oil exports?',
+      'Where is FDI coming from?',
+    ],
+    featured: true,
+  ),
+  Agent(
+    id: 'labour',
+    name: 'Labour Market',
+    initials: 'LM',
+    tone: AgentTone.blue,
+    tag: 'Employment, wages and workforce',
+    by: 'SCAD',
+    description:
+        'Explains labour force participation, unemployment and wage trends '
+        'across nationality, gender and sector from the labour force survey.',
+    capabilities: ['Labour survey', 'Wages', 'Participation'],
+    starters: [
+      'What is the latest unemployment rate?',
+      'How has participation changed over 5 years?',
+      'Compare wages by sector.',
+    ],
+    featured: true,
+  ),
+  Agent(
+    id: 'explainer',
+    name: 'Data Explainer',
+    initials: 'DE',
+    tone: AgentTone.purple,
+    tag: 'Plain-language definitions and methods',
+    by: 'SCAD',
+    description:
+        'Explains statistical concepts, definitions and methodology in plain '
+        'language — how indicators are measured and what caveats apply.',
+    capabilities: ['Definitions', 'Methodology', 'Caveats'],
+    starters: [
+      'What is the difference between nominal and real GDP?',
+      'How is CPI calculated?',
+      'What does "non-oil economy" include?',
+    ],
+    featured: true,
+  ),
+  Agent(
+    id: 'brief',
+    name: 'Ministerial Brief Writer',
+    initials: 'MB',
+    tone: AgentTone.green,
+    tag: 'Turns figures into concise briefing notes',
+    by: 'You',
+    description:
+        'Your custom agent: takes a topic and produces a tight, cited '
+        'ministerial briefing note in a consistent house style.',
+    capabilities: ['Briefing style', 'Citations', 'Concise'],
+    starters: [
+      'Draft a brief on Q1 housing inflation.',
+      'Summarize labour market trends for the minister.',
+      'One-page note on non-oil growth.',
+    ],
+    private: true,
+  ),
+];
+
 List<NotebookSource> economicAnomaliesSources() => [
   NotebookSource(
     kind: SourceKind.txt,
@@ -139,6 +276,53 @@ const List<LibraryItem> kBaseLibrary = [
     kind: OutputKind.report,
     title: 'Rent–CPI Divergence Notes',
     meta: 'Report · Jun 30',
+  ),
+];
+
+/// Internal (SCAD) statistical indicators cited behind an answer, shown in the
+/// Sources panel.
+const List<({String title, String tag})> kInternalSources = [
+  (
+    title: 'Gross Domestic Product at Current Prices — Annually',
+    tag: 'economy',
+  ),
+  (
+    title: 'Gross Domestic Product at Constant Prices — Quarterly',
+    tag: 'economy',
+  ),
+  (title: 'GDP Per Capita at Constant Prices — Annually', tag: 'economy'),
+  (
+    title: 'Gross Domestic Product at Current Prices — Quarterly',
+    tag: 'economy',
+  ),
+];
+
+/// Web sources cited behind an answer, shown in the Sources panel.
+const List<({String fav, String title, String url})> kWebSources = [
+  (
+    fav: 'W',
+    title: 'Emirate of Abu Dhabi — Wikipedia',
+    url: 'en.wikipedia.org/wiki/Emirate_of_Abu_Dhabi',
+  ),
+  (
+    fav: 'W',
+    title: 'Economy of the United Arab Emirates — Wikipedia',
+    url: 'en.wikipedia.org/wiki/Economy_of_the_UAE',
+  ),
+  (
+    fav: 'S',
+    title: 'Abu Dhabi’s GDP Expands 7.7% and Non-Oil Economy Grows 7.6%',
+    url: 'scad.gov.ae/w/abu-dhabi-s-gdp-expands-7-7',
+  ),
+  (
+    fav: 'U',
+    title: 'Abu Dhabi | The Official Platform of the UAE Government',
+    url: 'u.ae/en/about-the-uae/the-seven-emirates/abu-dhabi',
+  ),
+  (
+    fav: 'in',
+    title: 'Abu Dhabi GDP reaches AED 325.7 billion in Q3 2025',
+    url: 'linkedin.com/posts/adstatistics_abudhabi',
   ),
 ];
 

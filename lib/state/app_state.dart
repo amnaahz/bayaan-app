@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bayaan/data/mock/mock_answers.dart';
 import 'package:bayaan/data/mock/mock_data.dart';
+import 'package:bayaan/data/models/agent_models.dart';
 import 'package:bayaan/data/models/chat_models.dart';
 import 'package:bayaan/data/models/research_models.dart';
 import 'package:bayaan/data/models/space_models.dart';
@@ -13,9 +14,10 @@ part 'voice_controller.dart';
 part 'deep_research_controller.dart';
 part 'spaces_controller.dart';
 part 'drawer_controller.dart';
+part 'agents_controller.dart';
 
 /// Top-level navigation destinations.
-enum AppView { home, chat, spaces, artifacts, settings }
+enum AppView { home, chat, spaces, artifacts, agents, settings }
 
 /// Search scope selected in the composer mode menu.
 enum SearchMode { normal, web, deep }
@@ -225,6 +227,34 @@ class AppState extends ChangeNotifier {
   String renameDraft = '';
   int? _pendingChatForFolder;
 
+  // ── Agents state ──────────────────────────────────────────────────────────
+  List<Agent> agents = [];
+
+  /// Agent whose profile overlay is open (null when closed).
+  Agent? activeAgent;
+  bool get agentOpen => activeAgent != null;
+
+  /// Agent currently applied to the composer (via slash picker / attach menu).
+  Agent? attachedAgent;
+
+  /// Composer slash-command picker.
+  bool slashOpen = false;
+  String slashQuery = '';
+
+  // Create-agent modal.
+  bool newAgentOpen = false;
+  String naName = '';
+  String naDesc = '';
+  String naInstr = '';
+  bool naGenerating = false;
+  bool naToolsOpen = false;
+  bool naAdvOpen = false;
+  bool naToolWeb = false;
+  ResponseMode naResp = ResponseMode.standard;
+  bool naViz = true;
+  int naScope = 0;
+  Timer? _naGenTimer;
+
   void _init() {
     _homeTimer = Timer.periodic(const Duration(milliseconds: 4200), (_) {
       if (_view != AppView.home) return;
@@ -249,6 +279,7 @@ class AppState extends ChangeNotifier {
     chats = await repo.fetchChats();
     folders = await repo.fetchFolders();
     notebooks = await repo.fetchNotebooks();
+    agents = await repo.fetchAgents();
     nbSources = await repo.fetchNotebookSources('Economic Anomalies');
     notifyListeners();
   }
@@ -557,12 +588,14 @@ class AppState extends ChangeNotifier {
   bool get isChatNav => _view == AppView.home || _view == AppView.chat;
   bool get isSpacesNav => _view == AppView.spaces;
   bool get isArtifactsNav => _view == AppView.artifacts;
+  bool get isAgentsNav => _view == AppView.agents;
 
   bool get showComposer => _view == AppView.home || _view == AppView.chat;
   bool get showLogo => _view == AppView.home;
   String? get sectionTitle => switch (_view) {
     AppView.spaces => 'Spaces',
     AppView.artifacts => 'Artifacts',
+    AppView.agents => 'Agents',
     AppView.settings => 'Settings',
     _ => null,
   };
@@ -579,6 +612,18 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ── Sources panel (citations behind an answer) ──────────────────────────────
+  bool sourcesOpen = false;
+  void openSources() {
+    sourcesOpen = true;
+    notifyListeners();
+  }
+
+  void closeSources() {
+    sourcesOpen = false;
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     _homeTimer?.cancel();
@@ -591,6 +636,7 @@ class AppState extends ChangeNotifier {
     _clearNbDictTimers();
     _genTimer?.cancel();
     _playerTimer?.cancel();
+    _naGenTimer?.cancel();
     _toastTimer?.cancel();
     chatScroll.dispose();
     super.dispose();

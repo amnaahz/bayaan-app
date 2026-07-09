@@ -1,6 +1,11 @@
 import 'package:bayaan/core/widgets/app_background.dart';
+import 'package:bayaan/features/agents/agent_profile_overlay.dart';
+import 'package:bayaan/features/agents/agents_view.dart';
+import 'package:bayaan/features/agents/new_agent_modal.dart';
+import 'package:bayaan/features/agents/slash_agent_picker.dart';
 import 'package:bayaan/features/artifacts/artifacts_view.dart';
 import 'package:bayaan/features/chat/chat_view.dart';
+import 'package:bayaan/features/chat/sources_panel.dart';
 import 'package:bayaan/features/composer/composer.dart';
 import 'package:bayaan/features/composer/composer_menus.dart';
 import 'package:bayaan/features/drawer/app_drawer.dart';
@@ -103,6 +108,7 @@ class _FrameContent extends StatelessWidget {
           // Composer popovers.
           if (s.attachMenuOpen) const Positioned.fill(child: AttachMenu()),
           if (s.modeMenuOpen) const Positioned.fill(child: ModeMenu()),
+          if (s.slashOpen) const Positioned.fill(child: SlashAgentPicker()),
 
           // Full-surface feature overlays (mutually exclusive in practice).
           if (s.reportOpen)
@@ -110,6 +116,8 @@ class _FrameContent extends StatelessWidget {
           if (s.nbOpen) const Positioned.fill(child: NotebookOverlay()),
           if (s.drOpen) const Positioned.fill(child: DeepResearchOverlay()),
           if (s.voiceOpen) const Positioned.fill(child: VoiceOverlay()),
+          if (s.agentOpen) const Positioned.fill(child: AgentProfileOverlay()),
+          if (s.sourcesOpen) const Positioned.fill(child: SourcesPanel()),
 
           // Navigation drawer (kept mounted for slide animation).
           const Positioned.fill(child: AppDrawer()),
@@ -117,6 +125,7 @@ class _FrameContent extends StatelessWidget {
           // Centered modals.
           if (s.newFolderOpen) const Positioned.fill(child: NewFolderModal()),
           if (s.newNbOpen) const Positioned.fill(child: NewNotebookModal()),
+          if (s.newAgentOpen) const Positioned.fill(child: NewAgentModal()),
 
           // Toast (self-positioned, top of frame).
           const AppToast(),
@@ -137,6 +146,7 @@ class _ScreenSwitcher extends StatelessWidget {
       AppView.chat => const ChatView(),
       AppView.spaces => const SpacesView(),
       AppView.artifacts => const ArtifactsView(),
+      AppView.agents => const AgentsView(),
       AppView.settings => const SettingsView(),
     };
     return AnimatedSwitcher(

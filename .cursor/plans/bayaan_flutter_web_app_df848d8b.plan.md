@@ -43,7 +43,7 @@ todos:
     status: completed
   - id: build-host-qa
     content: Cross-check fidelity vs design, fix responsiveness/safe-areas; flutter build web; deploy to a static host; run the QA agent to produce a QA report (screenshots + pass/fail per checklist); fix findings; return the shareable link. Swap in real brand assets when provided.
-    status: in_progress
+    status: completed
 isProject: false
 ---
 

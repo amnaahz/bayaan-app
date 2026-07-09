@@ -4,6 +4,7 @@ import 'package:bayaan/core/theme/bayaan_colors.dart';
 import 'package:bayaan/core/theme/theme_x.dart';
 import 'package:bayaan/core/widgets/indicators.dart';
 import 'package:bayaan/data/models/ui_models.dart';
+import 'package:bayaan/features/agents/agent_visuals.dart';
 import 'package:bayaan/state/app_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -60,6 +61,10 @@ class _ComposerState extends State<Composer> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (s.attachedAgent != null) ...[
+              _AgentPill(s: s, c: c),
+              const SizedBox(height: 12),
+            ],
             if (s.attachments.isNotEmpty) ...[
               _Attachments(s: s, c: c),
               const SizedBox(height: 12),
@@ -70,7 +75,10 @@ class _ComposerState extends State<Composer> {
               TextField(
                 controller: _controller,
                 focusNode: _focus,
-                onChanged: s.onDraftChanged,
+                onChanged: (v) {
+                  s.handleSlashInput(v);
+                  s.onDraftChanged(v);
+                },
                 onSubmitted: (v) {
                   if (v.trim().isNotEmpty) s.askQuery(v.trim());
                 },
@@ -87,6 +95,69 @@ class _ComposerState extends State<Composer> {
               const SizedBox(height: 14),
               _Toolbar(s: s, c: c),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AgentPill extends StatelessWidget {
+  const _AgentPill({required this.s, required this.c});
+  final AppState s;
+  final BayaanColors c;
+
+  @override
+  Widget build(BuildContext context) {
+    final agent = s.attachedAgent!;
+    final tile = agentTileColors(c, agent.tone);
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(6, 5, 8, 5),
+        decoration: BoxDecoration(
+          color: c.blueTint,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: c.blueTintBd),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 22,
+              height: 22,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: tile.bg,
+                borderRadius: BorderRadius.circular(7),
+              ),
+              child: Text(
+                agent.initials,
+                style: AppTheme.mono(
+                  color: tile.fg,
+                  fontSize: 9,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 180),
+              child: Text(
+                agent.name,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                  color: c.link,
+                ),
+              ),
+            ),
+            const SizedBox(width: 7),
+            InkWell(
+              onTap: s.detachAgent,
+              child: Icon(LucideIcons.x, size: 13, color: c.link),
+            ),
           ],
         ),
       ),

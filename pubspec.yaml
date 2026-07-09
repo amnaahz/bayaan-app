@@ -12,8 +12,6 @@ dependencies:
     sdk: flutter
   # Vector brand mark rendering
   flutter_svg: ^2.3.0
-  # Typography (Geist / Geist Mono)
-  google_fonts: ^8.1.0
   # Lucide (feather-style) stroke icons used across the design
   lucide_icons: ^0.257.0
   # State management
@@ -32,7 +30,25 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # The brand mark is drawn as an inline vector (see core/widgets/bayaan_logo.dart)
-  # and typography is served at runtime via google_fonts, so no bundled assets
-  # are required yet. To bundle licensed Geist font files instead, drop them in
-  # assets/fonts/ and declare the families here.
+  # Geist / Geist Mono are bundled locally (rather than fetched at runtime) so
+  # typography renders instantly and reliably on every device, including mobile
+  # networks where a font CDN request could be slow or blocked.
+  fonts:
+    - family: Geist
+      fonts:
+        - asset: assets/fonts/Geist-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Geist-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Geist-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Geist-Bold.ttf
+          weight: 700
+    - family: Geist Mono
+      fonts:
+        - asset: assets/fonts/GeistMono-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/GeistMono-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/GeistMono-SemiBold.ttf
+          weight: 600

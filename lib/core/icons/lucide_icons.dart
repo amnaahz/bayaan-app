@@ -13,6 +13,11 @@ import 'package:flutter/widgets.dart';
 abstract final class LucideIcons {
   const LucideIcons._();
 
+  static const IconData arrowRight = IconData(
+    0xf155,
+    fontFamily: _f,
+    fontPackage: _p,
+  );
   static const IconData arrowUp = IconData(
     0xf15b,
     fontFamily: _f,
@@ -80,6 +85,11 @@ abstract final class LucideIcons {
   );
   static const IconData copy = IconData(
     0xf252,
+    fontFamily: _f,
+    fontPackage: _p,
+  );
+  static const IconData database = IconData(
+    0xf26c,
     fontFamily: _f,
     fontPackage: _p,
   );
@@ -210,6 +220,11 @@ abstract final class LucideIcons {
     fontFamily: _f,
     fontPackage: _p,
   );
+  static const IconData sliders = IconData(
+    0xf4db,
+    fontFamily: _f,
+    fontPackage: _p,
+  );
   static const IconData sparkles = IconData(
     0xf4e8,
     fontFamily: _f,
@@ -233,6 +248,11 @@ abstract final class LucideIcons {
   );
   static const IconData upload = IconData(
     0xf561,
+    fontFamily: _f,
+    fontPackage: _p,
+  );
+  static const IconData wand = IconData(
+    0xf58c,
     fontFamily: _f,
     fontPackage: _p,
   );
