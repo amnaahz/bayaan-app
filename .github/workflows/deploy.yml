@@ -6,18 +6,16 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
-# Allow one concurrent deployment; don't cancel an in-progress production deploy.
+# Serialize deploys; don't cancel an in-progress one.
 concurrency:
-  group: pages
+  group: pages-deploy
   cancel-in-progress: false
 
 jobs:
-  build:
-    name: Build web
+  deploy:
+    name: Build & publish to gh-pages
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,30 +30,26 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      # For a project page served at https://<user>.github.io/<repo>/ the app
-      # must be built with a matching base href.
-      # `--no-web-resources-cdn` self-hosts CanvasKit (served from the app's own
-      # /canvaskit/ folder) so it doesn't depend on the gstatic CDN, which can be
-      # slow or blocked on some mobile networks.
+      # `--no-web-resources-cdn` self-hosts CanvasKit so startup doesn't depend
+      # on the gstatic CDN (which can be slow/blocked on some mobile networks).
       - name: Build web
         run: flutter build web --release --no-web-resources-cdn --base-href "/${{ github.event.repository.name }}/"
 
-      - name: Add SPA fallback (404 -> index)
-        run: cp build/web/index.html build/web/404.html
+      - name: Add SPA fallback + disable Jekyll
+        run: |
+          cp build/web/index.html build/web/404.html
+          touch build/web/.nojekyll
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: build/web
-
-  deploy:
-    name: Deploy
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      # Publish the static build to the gh-pages branch. GitHub Pages serves it
+      # directly (Pages source = gh-pages branch), which avoids the Actions
+      # "deploy-pages" environment that can queue for a long time.
+      - name: Publish to gh-pages
+        run: |
+          cd build/web
+          git init -q
+          git checkout -q -b gh-pages
+          git add -A
+          git -c user.email="github-actions[bot]@users.noreply.github.com" \
+              -c user.name="github-actions[bot]" \
+              commit -q -m "Deploy ${{ github.sha }}"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
