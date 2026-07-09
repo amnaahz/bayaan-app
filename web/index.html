@@ -91,6 +91,54 @@
   <div id="loading"><div class="spinner"></div></div>
 
   <script>
+    // iOS standalone (Add to Home Screen) touch fix.
+    //
+    // In full-screen standalone mode iOS periodically recalculates the visual
+    // viewport (on launch, when returning to the app, after focus changes, etc.)
+    // and can leave the page scrolled by a few pixels. Flutter renders into a
+    // canvas, so this offset misaligns hit-testing and taps appear to do
+    // nothing even though the UI is visible. Attaching passive touchstart
+    // listeners nudges WebKit into delivering touches, and pinning the page
+    // scroll back to the origin keeps hit-test coordinates aligned.
+    (function () {
+      var isIos =
+        /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      var isStandalone =
+        window.navigator.standalone === true ||
+        window.matchMedia('(display-mode: standalone)').matches;
+      if (!isIos || !isStandalone) return;
+
+      var resetScroll = function () {
+        requestAnimationFrame(function () {
+          window.scrollTo(0, 0);
+          document.documentElement.scrollTop = 0;
+          if (document.body) document.body.scrollTop = 0;
+        });
+      };
+
+      var noop = function () {};
+      var opts = { capture: true, passive: true };
+      window.addEventListener('touchstart', noop, opts);
+      document.addEventListener('touchstart', noop, opts);
+      if (document.body) document.body.addEventListener('touchstart', noop, opts);
+
+      resetScroll();
+      window.addEventListener('pageshow', resetScroll);
+      window.addEventListener('resize', resetScroll);
+      window.addEventListener('orientationchange', resetScroll);
+      window.addEventListener('focusout', resetScroll, true);
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) resetScroll();
+      });
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', resetScroll);
+        window.visualViewport.addEventListener('scroll', resetScroll);
+      }
+    })();
+  </script>
+
+  <script>
     // Remove the splash once Flutter's first frame is on screen. The event has
     // historically been dispatched on both window and document, so listen on
     // both; a MutationObserver is a fallback in case the event is missed.
