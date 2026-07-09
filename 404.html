@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="/bayaan-app/">
+
+  <!-- Rescue devices that cached an older build: unregister any previously
+       installed service worker and clear its caches so they fetch fresh
+       assets. This app no longer registers a service worker. -->
+  <script>
+    (function () {
+      try {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function (regs) {
+            regs.forEach(function (r) { r.unregister(); });
+          }).catch(function () {});
+        }
+        if (window.caches && caches.keys) {
+          caches.keys().then(function (keys) {
+            keys.forEach(function (k) { caches.delete(k); });
+          }).catch(function () {});
+        }
+      } catch (e) { /* no-op */ }
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <!-- Critical for mobile: render at the device width instead of a desktop
+       fallback width (otherwise the app flips into its tiny desktop frame). -->
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="description" content="Bayaan - AI assistant for Abu Dhabi official statistics">
+  <meta name="theme-color" content="#0C0E13">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="bayaan">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>bayaan</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #0C0E13;
+    }
+    /* Dark splash + spinner so mobile users see intent, not a white flash,
+       while the engine downloads. Removed once Flutter renders its first frame. */
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #0C0E13;
+      z-index: 1;
+    }
+    #loading .spinner {
+      width: 34px;
+      height: 34px;
+      border: 3px solid rgba(41, 125, 227, 0.25);
+      border-top-color: #297DE3;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div id="loading"><div class="spinner"></div></div>
+
+  <script>
+    // iOS standalone (Add to Home Screen) touch fix.
+    //
+    // In full-screen standalone mode iOS periodically recalculates the visual
+    // viewport (on launch, when returning to the app, after focus changes, etc.)
+    // and can leave the page scrolled by a few pixels. Flutter renders into a
+    // canvas, so this offset misaligns hit-testing and taps appear to do
+    // nothing even though the UI is visible. Attaching passive touchstart
+    // listeners nudges WebKit into delivering touches, and pinning the page
+    // scroll back to the origin keeps hit-test coordinates aligned.
+    (function () {
+      var isIos =
+        /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      var isStandalone =
+        window.navigator.standalone === true ||
+        window.matchMedia('(display-mode: standalone)').matches;
+      if (!isIos || !isStandalone) return;
+
+      var resetScroll = function () {
+        requestAnimationFrame(function () {
+          window.scrollTo(0, 0);
+          document.documentElement.scrollTop = 0;
+          if (document.body) document.body.scrollTop = 0;
+        });
+      };
+
+      var noop = function () {};
+      var opts = { capture: true, passive: true };
+      window.addEventListener('touchstart', noop, opts);
+      document.addEventListener('touchstart', noop, opts);
+      if (document.body) document.body.addEventListener('touchstart', noop, opts);
+
+      resetScroll();
+      window.addEventListener('pageshow', resetScroll);
+      window.addEventListener('resize', resetScroll);
+      window.addEventListener('orientationchange', resetScroll);
+      window.addEventListener('focusout', resetScroll, true);
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) resetScroll();
+      });
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', resetScroll);
+        window.visualViewport.addEventListener('scroll', resetScroll);
+      }
+    })();
+  </script>
+
+  <script>
+    // Remove the splash once Flutter's first frame is on screen. The event has
+    // historically been dispatched on both window and document, so listen on
+    // both; a MutationObserver is a fallback in case the event is missed.
+    function removeSplash() {
+      var el = document.getElementById('loading');
+      if (el) el.remove();
+    }
+    window.addEventListener('flutter-first-frame', removeSplash);
+    document.addEventListener('flutter-first-frame', removeSplash);
+    var obs = new MutationObserver(function () {
+      if (document.querySelector('flutter-view, flt-glass-pane')) {
+        removeSplash();
+        obs.disconnect();
+      }
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
