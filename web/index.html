@@ -18,11 +18,17 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <!-- Critical for mobile: render at the device width instead of a desktop
+       fallback width (otherwise the app flips into its tiny desktop frame). -->
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="description" content="Bayaan - AI assistant for Abu Dhabi official statistics">
+  <meta name="theme-color" content="#0C0E13">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="bayaan">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
@@ -31,16 +37,57 @@
 
   <title>bayaan</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #0C0E13;
+    }
+    /* Dark splash + spinner so mobile users see intent, not a white flash,
+       while the engine downloads. Removed once Flutter renders its first frame. */
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #0C0E13;
+      z-index: 1;
+    }
+    #loading .spinner {
+      width: 34px;
+      height: 34px;
+      border: 3px solid rgba(41, 125, 227, 0.25);
+      border-top-color: #297DE3;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
+  <div id="loading"><div class="spinner"></div></div>
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
+  <script>
+    // Remove the splash once Flutter's first frame is on screen. The event has
+    // historically been dispatched on both window and document, so listen on
+    // both; a MutationObserver is a fallback in case the event is missed.
+    function removeSplash() {
+      var el = document.getElementById('loading');
+      if (el) el.remove();
+    }
+    window.addEventListener('flutter-first-frame', removeSplash);
+    document.addEventListener('flutter-first-frame', removeSplash);
+    var obs = new MutationObserver(function () {
+      if (document.querySelector('flutter-view, flt-glass-pane')) {
+        removeSplash();
+        obs.disconnect();
+      }
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

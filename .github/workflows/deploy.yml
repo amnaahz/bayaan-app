@@ -34,8 +34,11 @@ jobs:
 
       # For a project page served at https://<user>.github.io/<repo>/ the app
       # must be built with a matching base href.
+      # `--no-web-resources-cdn` self-hosts CanvasKit (served from the app's own
+      # /canvaskit/ folder) so it doesn't depend on the gstatic CDN, which can be
+      # slow or blocked on some mobile networks.
       - name: Build web
-        run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
+        run: flutter build web --release --no-web-resources-cdn --base-href "/${{ github.event.repository.name }}/"
 
       - name: Add SPA fallback (404 -> index)
         run: cp build/web/index.html build/web/404.html
