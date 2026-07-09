@@ -16,8 +16,14 @@ class AppHeader extends StatelessWidget {
     final s = context.watch<AppState>();
     final c = context.colors;
 
+    // Sit just below the device status bar. Using the real top inset keeps the
+    // header correct across a browser tab, an installed full-screen web app
+    // (where the OS reserves/overlays the status bar), and the desktop frame
+    // (where the inset is zeroed and only the base gap applies).
+    final topInset = MediaQuery.paddingOf(context).top;
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(14, 58, 14, 6),
+      padding: EdgeInsets.fromLTRB(14, topInset + 20, 14, 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
